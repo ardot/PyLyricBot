@@ -21,7 +21,7 @@ LYRIC_FILE = 'KanyeLyricFiles/kywt.txt'
 RHYMING_DICTIONARY = 'KanyeRhymingDictionary/ky2.dict'
 
 # Number of lyrics produced
-NUMBER_LINES = 4
+NUMBER_LINES = 8
 
 # The number of words per lyric
 MAX_WORDS = 8
@@ -29,7 +29,7 @@ MIN_WORDS = 5
 
 ###############################################################################
 
-# Vowels used to determine whether words rhyme!
+# Vowels used to determine whether words rhyme
 vowels = [
   'AA',
   'AE',
@@ -48,8 +48,9 @@ vowels = [
   'UW'
 ]
 
-# Create an instance of the markov chain. By default, it uses MarkovChain.py's location to
-# store and load its database files to. You probably want to give it another location, like so:
+# Create an instance of the markov chain. By default, it uses MarkovChain.py's
+# location to store and load its database files to. You probably want to give it
+# another location, like so:
 mc = MarkovChain("./markov")
 # To generate the markov chain's language model, in case it's not present
 with open (LYRIC_FILE, "r") as myfile:
@@ -70,35 +71,28 @@ def lastVowel(syllables):
       return syllables[counter:]
     counter = counter - 1
 
-
-d = deque()
-# generate 4 lines
-for i in range(0,NUMBER_LINES):
-  flag = 0
+# Repeatedly generates lyrics until a line is generated that is between the
+# allowable length of words
+def genLyric():
   length = 0
   stri = ""
   stri_split = []
+  # Loop until a lyric of approriate length is generated
   while length == 0:
     stri = mc.generateString()
     stri_split = stri.split(' ')
-    if (len(stri_split) < 8 and len(stri_split) > 5):
+    # Check the length of word
+    if (len(stri_split) < MAX_WORDS and len(stri_split) > MIN_WORDS):
       length = 1
-  last_word = stri_split[len(stri_split) - 1].upper()
-  last_word_syl = rhyming_dictionary[last_word]
-  last_vowel = lastVowel(last_word_syl)
-  #last_syl = last_word_syl[len(last_word_syl) - 1]
+  return (stri, stri_split)
 
+# generate as many lines as dictated by constant NUMBER_LINES
+for i in range(0,NUMBER_LINES):
+  flag = 0
   gens = []
-  gens.append((stri, last_word, last_vowel))
-
 
   while flag == 0:
-    length = 0
-    while length == 0:
-      stri = mc.generateString()
-      stri_split = stri.split(' ')
-      if (len(stri_split) < MAX_WORDS and len(stri_split) > MIN_WORDS):
-        length = 1
+    (stri, stri_split) = genLyric()
     # Determine the last word, syllables, and vowel
     last_word = stri_split[len(stri_split) - 1].upper()
     last_word_syl = rhyming_dictionary[last_word]
