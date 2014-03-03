@@ -7,7 +7,7 @@ import urllib2
 # CONSTANTS
 # Edit these values to change the results!!
 
-ARTIST = 'Cake'
+ARTIST = '2 Chainz'
 
 ###############################################################################
 
@@ -18,7 +18,6 @@ fmt = '&fmt=json'
 def sanitize_url(url):
   bads = ['/', '&', '?']
   goods = ['%2F', '%26', '%3F']
-
   for i in range(0, len(bads)):
     url= url.replace(bads[i], goods[i])
   return url
@@ -30,6 +29,12 @@ artist = ARTIST.replace(' ', '+')
 artist = sanitize_url(artist)
 url = lyric_wikia + artist
 data = json.load(urllib2.urlopen(url + fmt))
+
+# Open the files for writing
+filename = 'LyricFiles/' + artist
+wordname = 'LyricFiles/' + artist + '_words'
+f_words = open(wordname, 'w')
+f = open(filename, 'w')
 
 # Run through each song, and get lyric data
 for album in data['albums']:
@@ -89,14 +94,13 @@ for album in data['albums']:
       #lyrics_string = ''.join(chr(int(i)) for i in replaced_split)
       lyrics_words = lyrics_string.split(' ')
 
-
-      filename = 'LyricFiles/' + ARTIST
-      wordname = 'LyricFiles/' + ARTIST + '_words'
-      f_words = open(wordname, 'a')
-      f = open(filename, 'a')
       f.write(lyrics_string)
       for word in lyrics_words:
-        f_words.write(word + '\n')
+        f_words.write(word.upper() + '\n')
 
-    except urllib2.HTTPError, e:
+    except (urllib2.HTTPError, UnicodeEncodeError) as e:
       print "Exception at URL: " + song_url
+
+# Close out the files after execution
+f.close()
+f_words.close()

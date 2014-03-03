@@ -14,17 +14,17 @@ from xml.etree import ElementTree
 # Edit these values to change the results!!
 
 # The file of lyrics used to train the markov chain.
-LYRIC_FILE = 'KanyeLyricFiles/kywt.txt'
+LYRIC_FILE = 'LyricFiles/2+Chainz'
 
 # The pronunciation dictionary used to create rhymes. This must contain all of
 # the words in the lyrics file
-RHYMING_DICTIONARY = 'KanyeRhymingDictionary/ky2.dict'
+RHYMING_DICTIONARY = 'RhymingDictionaries/2Chainz.dict'
 
 # Number of lyrics produced
 NUMBER_LINES = 8
 
 # The number of words per lyric
-MAX_WORDS = 8
+MAX_WORDS = 10
 MIN_WORDS = 5
 
 ###############################################################################
@@ -57,11 +57,13 @@ with open (LYRIC_FILE, "r") as myfile:
   data=myfile.read().replace('\n', '\n')
 mc.generateDatabase(data, '\n')
 
+# Reads in the rhyming dictionary and stores it in program memory
 rhyming_dictionary = {}
 with open(RHYMING_DICTIONARY, 'rb') as csvfile:
   spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
   for row in spamreader:
-    rhyming_dictionary[row[0]] = row[1:]
+    row_zero = row[0].split('\t')
+    rhyming_dictionary[row_zero[0]] = [row_zero[1]] + row[1:]
 
 # Finds the last vowel in a group of words
 def lastVowel(syllables):
