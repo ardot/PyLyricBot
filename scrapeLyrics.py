@@ -98,7 +98,7 @@ for album in data['albums']:
       for word in lyrics_words:
         f_words.write(word.upper() + '\n')
 
-    except (urllib2.HTTPError, UnicodeEncodeError) as e:
+    except:
       print "Exception at URL: " + song_url
 
 # Close out the files after execution
